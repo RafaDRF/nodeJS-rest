@@ -40,10 +40,65 @@ class Atendimento {
                     resposta.status(400).json(erro)
                 }
                 else{
-                    resposta.status(201).json(resultados)
+                    resposta.status(201).json(atendimento)
                 }
             })
         }
+    }
+    mostra(resposta){
+        const sql = 'SELECT * FROM Atendimentos'
+
+        conexao.query(sql, (erro, resultados)=> {
+            if(erro){
+                resposta.status(400).json(erro)
+            }
+            else{
+                resposta.status(200).json(resultados)
+            }
+        })
+    }
+    buscaPorId(id, resposta){
+        const sql = `SELECT * FROM Atendimentos WHERE id = ${id}`
+
+        conexao.query(sql, (erro, resultados)=> {
+
+            const atendimento = resultados[0]
+            if(erro){
+                resposta.status(400).json(erro)
+            }
+            else{
+                resposta.status(200).json(atendimento)
+            }
+        })
+    }
+    altera(id, valores, resposta){
+        const sql = 'UPDATE Atendimentos SET ? WHERE id=?'
+
+        if(valores.data){
+            
+            valores.data = moment(valores.data, 'DD/MM/YYYY').format('YYYY-MM-DD HH:MM:SS')
+        }
+
+        conexao.query(sql, [valores, id], (erro, resultados) =>{
+            if(erro){
+                resposta.status(400).json(erro)
+            }
+            else{
+                resposta.status(200).json({...valores, id})
+            }
+        })
+    }
+    deleta(id, resposta){
+        const sql = 'DELETE FROM Atendimentos WHERE id=?'
+
+        conexao.query(sql, id, (erro, resultados) => {
+            if(erro){
+                resposta.status(400).json(erro)
+            }
+            else{
+                resposta.status(200).json({id})
+            }
+        })
     }
 }
 
